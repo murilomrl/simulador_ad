@@ -24,7 +24,7 @@ class Simulador:
 		taxa_chegada = self.rho/self.mi
 		print(taxa_chegada)
 		np.random.seed(self.semente)
-		coletas_simulacao = 100000
+		coletas_simulacao = 3200000
 		tempo_simulacao = 0.0
 		numero_total_rodadas = 1
 		rodadas_realizadas = 0
@@ -32,7 +32,9 @@ class Simulador:
 		chegada_id = 0
 		entrada_servico_id = 0
 		saida_id = 0
+		media_w = 0.0
 		fila_eventos = []
+		lista_w = []
 		random_num = np.random.rand()
 		tempo_chegada = np.log(random_num)/(-taxa_chegada)
 		evento = Evento("chegada", tempo_chegada, chegada_id)
@@ -82,6 +84,9 @@ class Simulador:
 				else:
 					coletas_realizadas += 1
 					lista_entrada_servico.append(evento)
+					w = lista_entrada_servico[entrada_servico_id-1].tempo - lista_chegada[entrada_servico_id-1].tempo
+					lista_w.append(w)
+					media_w += w/coletas_simulacao
 					#print("\nEntrou em serviço: " + str(evento.tempo))
 					random_num = np.random.rand()
 					nova_partida = np.log(random_num)/(-self.mi)
@@ -93,10 +98,13 @@ class Simulador:
 
 			rodadas_realizadas += 1
 		#print(lista_chegada,lista_entrada_servico)
-		lista_w = self.calcula_w(lista_chegada[:], lista_entrada_servico[:])
+		#lista_w = self.calcula_w(lista_chegada[:], lista_entrada_servico[:])
 		#print(lista_w)
-		media_w = 0.0
+		#media_w = 0.0
+		variancia_w = 0.0
 		for w in lista_w:
-			media_w += w
-		media_w = round(media_w/len(lista_w),4)
+			variancia_w += (w - media_w)**2
+		variancia_w = round(variancia_w/(coletas_realizadas-1), 4)
+		media_w = round(media_w,4)
 		print(media_w)
+		print(variancia_w)
