@@ -1,10 +1,10 @@
 ##@package main
-# ...breve explicação do que faz...
+# Função principal que importa e inicia Simulador
 
 from Simulador import Simulador
 
-## ...Explicação da variável e valores a serem escolhidos...
+## Variável simuladordo tipo Simulador que recebe como parâmetros de entrada mi, rho e uma semente de número aleatório. Normalmente um número primo grande é escolhido
 simulador = Simulador(1,0.9,887)
 
-## ...Explicação do que faz...
+## Função iniciar começa a simulação com os parâmetros mi, rho e semente.
 simulador.iniciar()
