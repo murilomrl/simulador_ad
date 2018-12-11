@@ -2,12 +2,30 @@ import numpy as np
 from Fregues import Fregues
 from Evento import Evento
 
+
+##@class Simulador 
+# @brief Breve explicacação pra que a classe serve.
+# 
+# Mais explicações sobre por que a classe foi criada e uma explicação geral do que ela faz.
 class Simulador:
+    
+
+	## Comentário: ...explicar o que o método faz...
+	# @param self ...explicação desse parâmetro...
+	# @param mi ...explicação desse parâmetro...
+	# @param rho ...explicação desse parâmetro...
+	# @param semente ...explicação desse parâmetro...
     def __init__(self, mi, rho, semente):
         self.mi = mi
         self.rho = rho
         self.semente = semente
 
+        
+	## Comentário: ...explicar o que o método faz...
+	# @param self ...explicação desse parâmetro...
+	# @param lista_chegada ...explicação desse parâmetro...
+	# @param lista_entrada_servico ...explicação desse parâmetro...
+	# @return ...explicar o que essa função retorna...
     def calcula_w(self, lista_chegada, lista_entrada_servico):
         i = 0
         lista_w = []
@@ -20,6 +38,8 @@ class Simulador:
             i+=1
         return lista_w[:]
 
+	## Comentário: ...explicar o que o método faz...
+	# @param self ...explicação desse parâmetro...    
     def iniciar(self):
         taxa_chegada = self.rho/self.mi
         print(taxa_chegada)
