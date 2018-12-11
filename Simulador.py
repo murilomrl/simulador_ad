@@ -4,28 +4,28 @@ from Evento import Evento
 
 
 ##@class Simulador 
-# @brief Breve explicacação pra que a classe serve.
+# @brief Simula uma Fila M/M/1 FCFS ou LCFS
 # 
-# Mais explicações sobre por que a classe foi criada e uma explicação geral do que ela faz.
+# Foi criada para ser o principal meio de simular uma fila M/M/1. A Classe Simulador começa definindo seus parâmetros iniciais e gera um evento chegada com uma distribuição Lambda. A partir desse evento novas chegadas são geradas e a simulação começa. Cada evento tem um tempo  de acontecimento e o loop principal de rodada verifica esse tipo para gerar novos eventos de acordo com as condições.
 class Simulador:
     
 
-	## Comentário: ...explicar o que o método faz...
-	# @param self ...explicação desse parâmetro...
-	# @param mi ...explicação desse parâmetro...
-	# @param rho ...explicação desse parâmetro...
-	# @param semente ...explicação desse parâmetro...
+	## Comentário: Método construtor de Simulador que recebe e define as variáveis mi, rho e semente.
+	# @param self Referência ao prório objeto.
+	# @param mi Taxa de serviço.
+	# @param rho Utilização do sistema.
+	# @param semente Semente usada na função de geração de número aleatório.
     def __init__(self, mi, rho, semente):
         self.mi = mi
         self.rho = rho
         self.semente = semente
 
         
-	## Comentário: ...explicar o que o método faz...
-	# @param self ...explicação desse parâmetro...
-	# @param lista_chegada ...explicação desse parâmetro...
-	# @param lista_entrada_servico ...explicação desse parâmetro...
-	# @return ...explicar o que essa função retorna...
+	## Comentário: Calcula o tempo de espera na fila
+	# @param self Referência ao prório objeto.
+	# @param lista_chegada Lista de Eventos do tipo chegada.
+	# @param lista_entrada_servico Lista de Eventos do tipo entrada_servico.
+	# @return Retorna uma lista com o tempo de espera na fila de cada evento.
     def calcula_w(self, lista_chegada, lista_entrada_servico):
         i = 0
         lista_w = []
@@ -38,8 +38,8 @@ class Simulador:
             i+=1
         return lista_w[:]
 
-	## Comentário: ...explicar o que o método faz...
-	# @param self ...explicação desse parâmetro...    
+	## Comentário: Inicia os parêmetros e cria o primeiro evento de chegada da simulação.
+	# @param self Referência ao prório objeto.
     def iniciar(self):
         taxa_chegada = self.rho/self.mi
         print(taxa_chegada)
