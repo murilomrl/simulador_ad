@@ -95,7 +95,11 @@ class Simulador:
         media_espera_minima = 0.0
         termino_fase_transiente = 0
         tempo_total = 0.0
-        numero_em_espera = []
+        numero_em_espera = 0.0
+        variancia_estimada_fregueses = 0.0
+        variancia_estimada_fregueses_1 = 0.0
+        variancia_estimada_fregueses_2 = 0.0
+        coletas_numero_espera = 0
         while rodadas_realizadas < numero_total_rodadas or fase_transiente == True:
             coletas_realizadas = 0
             while coletas_realizadas < coletas_simulacao and len(fila_eventos) > 0:
@@ -108,6 +112,11 @@ class Simulador:
                     #print("\nTempo Chegada: " + str(evento.tempo))
                     #print("\nChegou: " + str(evento.tempo))
                     numero_em_espera += numero_fregueses_fila* (evento.tempo - tempo_simulacao)
+                    coletas_numero_espera +=1
+                    if coletas_numero_espera > 2:
+                            variancia_estimada_fregueses_1 = (variancia_estimada_fregueses_1*(coletas_numero_espera-2) + w**2)/(coletas_numero_espera-1)
+                            variancia_estimada_fregueses_2 = (sqrt(variancia_estimada_fregueses_2*(coletas_numero_espera-1)*(coletas_numero_espera-2)) + num)**2/(coletas_numero_espera*(coletas_numero_espera-1))
+                        variancia_estimada_fregueses = variancia_estimada_w_1 - variancia_estimada_w_2
                     tempo_simulacao = evento.tempo
                     lista_chegada.append(evento)
                     numero_fregueses_fila += 1
@@ -127,6 +136,11 @@ class Simulador:
 
                 elif evento.tipo == "partida":
                     numero_em_espera += numero_fregueses_fila* (evento.tempo - tempo_simulacao)
+                    coletas_numero_espera +=1
+                    if coletas_numero_espera > 2:
+                            variancia_estimada_fregueses_1 = (variancia_estimada_fregueses_1*(coletas_numero_espera-2) + w**2)/(coletas_numero_espera-1)
+                            variancia_estimada_fregueses_2 = (sqrt(variancia_estimada_fregueses_2*(coletas_numero_espera-1)*(coletas_numero_espera-2)) + num)**2/(coletas_numero_espera*(coletas_numero_espera-1))
+                        variancia_estimada_fregueses = variancia_estimada_w_1 - variancia_estimada_w_2
                     tempo_simulacao = evento.tempo
                     lista_partidas.append(evento)
                     numero_fregueses_fila -= 1
