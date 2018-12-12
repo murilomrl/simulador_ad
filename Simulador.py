@@ -66,7 +66,7 @@ class Simulador:
         taxa_chegada = self.rho/self.mi
         print(taxa_chegada)
         np.random.seed(self.semente)
-        coletas_simulacao = 1000
+        coletas_simulacao = 200
         tempo_simulacao = 0.0
         numero_total_rodadas = 3200
         rodadas_realizadas = 0
@@ -94,6 +94,8 @@ class Simulador:
         media_espera_maxima = 0.0
         media_espera_minima = 0.0
         termino_fase_transiente = 0
+        tempo_total = 0.0
+        numero_em_espera = []
         while rodadas_realizadas < numero_total_rodadas or fase_transiente == True:
             coletas_realizadas = 0
             while coletas_realizadas < coletas_simulacao and len(fila_eventos) > 0:
@@ -105,6 +107,7 @@ class Simulador:
                 if evento.tipo == "chegada":
                     #print("\nTempo Chegada: " + str(evento.tempo))
                     #print("\nChegou: " + str(evento.tempo))
+                    numero_em_espera += numero_fregueses_fila* (evento.tempo - tempo_simulacao)
                     tempo_simulacao = evento.tempo
                     lista_chegada.append(evento)
                     numero_fregueses_fila += 1
@@ -123,6 +126,7 @@ class Simulador:
                             entrada_servico_id += 1
 
                 elif evento.tipo == "partida":
+                    numero_em_espera += numero_fregueses_fila* (evento.tempo - tempo_simulacao)
                     tempo_simulacao = evento.tempo
                     lista_partidas.append(evento)
                     numero_fregueses_fila -= 1
@@ -192,6 +196,7 @@ class Simulador:
         #media_w = 0.0
         #variancia_estimada_w = sum(lista_variancia)/(numero_total_rodadas)
         media_w = round(sum(lista_w[190000:])/(numero_total_rodadas*coletas_simulacao),4)
+        numero_em_espera = numero_em_espera/tempo_simulacao
         #variancia_total_w = round(variancia_total_w/(coletas_realizadas*numero_total_rodadas - 1), 4)
         #media_w = round(media_w/numero_total_rodadas,4)
         media_variancia = sum(lista_variancia[190000:])/(coletas_simulacao*numero_total_rodadas)
