@@ -3,12 +3,21 @@
 
 from Simulador import Simulador
 
+## ... comentar essa variável...
 rho = input("\nDigite a utilização: ")
+
+## ... comentar essa variável...
 semente = input("\nDigite a semente: ") #9707 padrao
+
+
 ## Variável simuladordo tipo Simulador que recebe como parâmetros de entrada mi, rho e uma semente de número aleatório. Normalmente um número primo grande é escolhido
 simulador = Simulador(1,rho,semente)
 
+
+## ... comentar essa variável e o que ela faz depois...
 tipo_fila = input("Digite o tipo de fila FCFS ou LCFS:")
+
+
 if tipo_fila.lower() == "fcfs":
 	## Função iniciar começa a simulação com os parâmetros mi, rho e semente.
 	simulador.iniciar()
