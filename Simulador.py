@@ -58,7 +58,6 @@ class Simulador:
         variancia_estimada_w = 0.0
         variancia_estimada_w_1 = 0.0
         variancia_estimada_w_2 = 0.0
-        variancia_anterior = 0.0
         coletas_totais = 0.0
         media_estimada = []
         lista_variancia = []
@@ -74,7 +73,6 @@ class Simulador:
         while rodadas_realizadas < numero_total_rodadas:
             coletas_realizadas = 0
             while coletas_realizadas <= coletas_simulacao and len(fila_eventos) > 0:
-                variancia_anterior = variancia_estimada_w
                 #print(fila_eventos)
                 evento = fila_eventos.pop(0)
                 #print(evento)
@@ -116,16 +114,16 @@ class Simulador:
                     lista_entrada_servico.append(evento)
                     if evento.rodada == rodadas_realizadas:
                         coletas_realizadas += 1
-                        #coletas_totais += 1
+                        coletas_totais += 1
                         w = lista_entrada_servico[entrada_servico_id-1].tempo - lista_chegada[entrada_servico_id-1].tempo
                         lista_w.append(w)
                         media_w += w/coletas_simulacao
-                        if coletas_realizadas > 2:
-                            variancia_estimada_w_1 = (variancia_estimada_w_1*(coletas_realizadas-2) + w**2)/(coletas_realizadas-1)
-                            variancia_estimada_w_2 = (sqrt(variancia_estimada_w_2*(coletas_realizadas-1)*(coletas_realizadas-2)) + w)**2/(coletas_realizadas*(coletas_realizadas-1))
+                        if coletas_totais > 2:
+                            variancia_estimada_w_1 = (variancia_estimada_w_1*(coletas_totais-2) + w**2)/(coletas_totais-1)
+                            variancia_estimada_w_2 = (sqrt(variancia_estimada_w_2*(coletas_totais-1)*(coletas_totais-2)) + w)**2/(coletas_totais*(coletas_totais-1))
                         variancia_estimada_w = variancia_estimada_w_1 - variancia_estimada_w_2
-                        #lista_variancia.append(variancia_estimada_w)
-                        media_estimada.append(media_w*coletas_simulacao/coletas_realizadas)
+                        lista_variancia.append(variancia_estimada_w)
+                        media_estimada.append(w/coletas_realizadas)
                     #print("\nEntrou em serviço: " + str(evento.tempo))
                     random_num = np.random.rand()
                     nova_partida = np.log(random_num)/(-self.mi)
@@ -134,10 +132,10 @@ class Simulador:
                     evento = Evento("partida", tempo_partida, rodadas_realizadas)
                     fila_eventos.append(evento)
                     saida_id += 1
-            lista_variancia.append(variancia_estimada_w)
-            variancia_estimada_w = 0.0
-            variancia_estimada_w_1 = 0.0
-            variancia_estimada_w_2 = 0.0
+            #lista_variancia.append(variancia_estimada_w)
+            #variancia_estimada_w = 0.0
+            #variancia_estimada_w_1 = 0.0
+            #variancia_estimada_w_2 = 0.0
             #variancia_w = 0.0
             #for w in lista_w:
             #    variancia_w += (w - media_w)**2
@@ -148,11 +146,18 @@ class Simulador:
         #lista_w = self.calcula_w(lista_chegada[:], lista_entrada_servico[:])
         #print(lista_w)
         #media_w = 0.0
-        
+
+        #variancia_estimada_w = sum(lista_variancia)/(numero_total_rodadas)
         media_w = round(media_w/numero_total_rodadas,4)
-        print(media_w)
+        #variancia_total_w = round(variancia_total_w/(coletas_realizadas*numero_total_rodadas - 1), 4)
+        #media_w = round(media_w/numero_total_rodadas,4)
+        limite_superior_t_student = media_w + 1.961*sqrt(variancia_estimada_w/(coletas_simulacao*numero_total_rodadas - 2))
+        limite_inferior_t_student = media_w - 1.961*sqrt(variancia_estimada_w/(coletas_simulacao*numero_total_rodadas - 2))
+        print("\nPrecisão: " + str(1.961*sqrt(variancia_estimada_w)/(media_w*sqrt(coletas_simulacao*numero_total_rodadas - 2))))
+        print("\nIC da média t-Student:\nLimite Inferior: " + str(limite_inferior_t_student) + "\nLimite Superior: " + str(limite_superior_t_student))
         #print(variancia_total_w/numero_total_rodadas)
         print(variancia_estimada_w)
+        print(media_w)
         plt.plot(lista_variancia)
         #plt.plot(media_estimada)
         plt.ylabel('Tempo de Espera')
