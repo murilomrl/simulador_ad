@@ -1,7 +1,8 @@
 import numpy as np
+from math import sqrt
 from Fregues import Fregues
 from Evento import Evento
-
+import matplotlib.pyplot as plt
 
 ##@class Simulador 
 # @brief Simula uma Fila M/M/1 FCFS ou LCFS
@@ -44,16 +45,23 @@ class Simulador:
         taxa_chegada = self.rho/self.mi
         print(taxa_chegada)
         np.random.seed(self.semente)
-        coletas_simulacao = 150000
+        coletas_simulacao = 100
         tempo_simulacao = 0.0
-        numero_total_rodadas = 3
+        numero_total_rodadas = 3200
         rodadas_realizadas = 0
         numero_fregueses_fila = 0
         chegada_id = 0
         entrada_servico_id = 0
         saida_id = 0
         media_w = 0.0
-        variancia_total_w = 0.0
+        #variancia_total_w = 0.0
+        variancia_estimada_w = 0.0
+        variancia_estimada_w_1 = 0.0
+        variancia_estimada_w_2 = 0.0
+        variancia_anterior = 0.0
+        coletas_totais = 0.0
+        media_estimada = []
+        lista_variancia = []
         fila_eventos = []
         lista_w = []
         random_num = np.random.rand()
@@ -66,6 +74,7 @@ class Simulador:
         while rodadas_realizadas < numero_total_rodadas:
             coletas_realizadas = 0
             while coletas_realizadas <= coletas_simulacao and len(fila_eventos) > 0:
+                variancia_anterior = variancia_estimada_w
                 #print(fila_eventos)
                 evento = fila_eventos.pop(0)
                 #print(evento)
@@ -104,12 +113,19 @@ class Simulador:
                             fila_eventos.append(evento)
                         entrada_servico_id += 1
                 else:
-                    coletas_realizadas += 1
                     lista_entrada_servico.append(evento)
                     if evento.rodada == rodadas_realizadas:
+                        coletas_realizadas += 1
+                        #coletas_totais += 1
                         w = lista_entrada_servico[entrada_servico_id-1].tempo - lista_chegada[entrada_servico_id-1].tempo
                         lista_w.append(w)
                         media_w += w/coletas_simulacao
+                        if coletas_realizadas > 2:
+                            variancia_estimada_w_1 = (variancia_estimada_w_1*(coletas_realizadas-2) + w**2)/(coletas_realizadas-1)
+                            variancia_estimada_w_2 = (sqrt(variancia_estimada_w_2*(coletas_realizadas-1)*(coletas_realizadas-2)) + w)**2/(coletas_realizadas*(coletas_realizadas-1))
+                        variancia_estimada_w = variancia_estimada_w_1 - variancia_estimada_w_2
+                        #lista_variancia.append(variancia_estimada_w)
+                        media_estimada.append(media_w*coletas_simulacao/coletas_realizadas)
                     #print("\nEntrou em serviço: " + str(evento.tempo))
                     random_num = np.random.rand()
                     nova_partida = np.log(random_num)/(-self.mi)
@@ -118,10 +134,14 @@ class Simulador:
                     evento = Evento("partida", tempo_partida, rodadas_realizadas)
                     fila_eventos.append(evento)
                     saida_id += 1
-            variancia_w = 0.0
-            for w in lista_w:
-                variancia_w += (w - media_w)**2
-            variancia_total_w += round(variancia_w/(coletas_realizadas-1), 4)
+            lista_variancia.append(variancia_estimada_w)
+            variancia_estimada_w = 0.0
+            variancia_estimada_w_1 = 0.0
+            variancia_estimada_w_2 = 0.0
+            #variancia_w = 0.0
+            #for w in lista_w:
+            #    variancia_w += (w - media_w)**2
+            #variancia_total_w += round(variancia_w/(coletas_realizadas-1), 4)
             lista_w = []
             rodadas_realizadas += 1
         #print(lista_chegada,lista_entrada_servico)
@@ -131,4 +151,9 @@ class Simulador:
         
         media_w = round(media_w/numero_total_rodadas,4)
         print(media_w)
-        print(variancia_total_w/numero_total_rodadas)
+        #print(variancia_total_w/numero_total_rodadas)
+        print(variancia_estimada_w)
+        plt.plot(lista_variancia)
+        #plt.plot(media_estimada)
+        plt.ylabel('Tempo de Espera')
+        plt.show()
