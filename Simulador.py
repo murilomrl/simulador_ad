@@ -11,7 +11,7 @@ import time
 class Simulador:
     
 
-	## Comentário: Método construtor de Simulador que recebe e define as variáveis mi, rho e semente.
+	## Método construtor de Simulador que recebe e define as variáveis mi, rho e semente.
 	# @param self Referência ao prório objeto.
 	# @param mi Taxa de serviço.
 	# @param rho Utilização do sistema.
@@ -21,7 +21,11 @@ class Simulador:
         self.rho = rho
         self.semente = semente
 
-
+	## ...explicar o que a função faz...
+	# @param self ...explicar a variavel...
+	# @param numero_total_rodadas ...explicar variavel...
+	# @param coletas_simulacao ...explicar variavel...
+	# @return ...explicar o que essa função retorna...
     def t_student(self, lista, numero_total_rodadas, coletas_simulacao):
         media_w = round(sum(lista)/(numero_total_rodadas*coletas_simulacao),4)
         variancia = self.variancia(lista)
@@ -31,7 +35,10 @@ class Simulador:
         print("\nIC da média t-Student:\nLimite Inferior: " + str(limite_inferior_t_student) + "\nLimite Superior: " + str(limite_superior_t_student))
         return (limite_superior_t_student,limite_inferior_t_student)
         
-
+	## ...explicar o que a função faz...
+	# @param self ...explicar a variavel...
+	# @param lista ...explicar variavel...
+	# @return ...explicar o que essa função retorna...
     def variancia(self, lista):
         n = len(lista)
         media_lista = sum(lista)/n
@@ -152,6 +159,7 @@ class Simulador:
                 fase_transiente = False
                 rodadas_realizadas = 0
 
+	
         media_w = round(sum(lista_w[190000:])/(numero_total_rodadas*coletas_simulacao),4)
         #ITEM C
         numero_em_espera = numero_em_espera/tempo_simulacao
