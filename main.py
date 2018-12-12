@@ -1,12 +1,8 @@
 ##@package main
 # Função principal que importa e inicia Simulador
 
-from Simulador import Simulador
-
-## ... comentar essa variável...
 rho = input("\nDigite a utilização: ")
 
-## ... comentar essa variável...
 semente = input("\nDigite a semente: ") #9707 padrao
 
 
@@ -14,7 +10,6 @@ semente = input("\nDigite a semente: ") #9707 padrao
 simulador = Simulador(1,rho,semente)
 
 
-## ... comentar essa variável e o que ela faz depois...
 tipo_fila = input("Digite o tipo de fila FCFS ou LCFS:")
 
 
