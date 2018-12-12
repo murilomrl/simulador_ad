@@ -21,11 +21,12 @@ class Simulador:
         self.rho = rho
         self.semente = semente
 
-	## ...explicar o que a função faz...
-	# @param self ...explicar a variavel...
-	# @param numero_total_rodadas ...explicar variavel...
-	# @param coletas_simulacao ...explicar variavel...
-	# @return ...explicar o que essa função retorna...
+	## Método que calcula os limites do intervalo t-student
+	# @param self Referência ao próprio objeto.
+	# @param lista Lista com valores desejados a se calcular o intervalo.
+	# @param numero_total_rodadas Número total de rodadas da simulação.
+	# @param coletas_simulacao Número de coletas por rodada.
+	# @return Retorna resultado do t=student.
     def t_student(self, lista, numero_total_rodadas, coletas_simulacao):
         media_w = round(sum(lista)/(numero_total_rodadas*coletas_simulacao),4)
         variancia = self.variancia(lista)
@@ -35,9 +36,9 @@ class Simulador:
         print("\nIC da média t-Student:\nLimite Inferior: " + str(limite_inferior_t_student) + "\nLimite Superior: " + str(limite_superior_t_student))
         return (limite_superior_t_student,limite_inferior_t_student)
         
-	## ...explicar o que a função faz...
-	# @param self ...explicar a variavel...
-	# @param lista ...explicar variavel...
+	## Método que calcula a variância.
+	# @param self Referência ao próprio objeto.
+	# @param lista Lista com valores desejados a se calcular a variância.
 	# @return ...explicar o que essa função retorna...
     def variancia(self, lista):
         n = len(lista)
