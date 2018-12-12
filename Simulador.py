@@ -21,6 +21,26 @@ class Simulador:
         self.rho = rho
         self.semente = semente
 
+
+    def t_student(self, lista, numero_total_rodadas, coletas_simulacao):
+        media_w = round(sum(lista)/(numero_total_rodadas*coletas_simulacao),4)
+        #variancia_total_w = round(variancia_total_w/(coletas_realizadas*numero_total_rodadas - 1), 4)
+        #media_w = round(media_w/numero_total_rodadas,4)
+        #media_variancia = sum(lista_variancia[190001:])/(coletas_simulacao*numero_total_rodadas)
+        variancia = self.variancia(lista)
+        limite_superior_t_student = media_w + 1.961*sqrt(variancia/numero_total_rodadas)
+        limite_inferior_t_student = media_w - 1.961*sqrt(variancia/numero_total_rodadas)
+        print("\nPrecisão t-Student: " + str((limite_superior_t_student - limite_inferior_t_student)/(limite_superior_t_student + limite_inferior_t_student)))
+        print("\nIC da média t-Student:\nLimite Inferior: " + str(limite_inferior_t_student) + "\nLimite Superior: " + str(limite_superior_t_student))
+
+    def variancia(self, lista):
+        n = len(lista)
+        media_lista = sum(lista)/n
+        variancia = 0.0
+        for valor in lista:
+            variancia += (valor - media_lista)**2
+        return variancia/(n-1)
+
 	## Comentário: Calcula o tempo de espera na fila
 	# @param self Referência ao prório objeto.
 	# @param lista_chegada Lista de Eventos do tipo chegada.
@@ -44,7 +64,7 @@ class Simulador:
         taxa_chegada = self.rho/self.mi
         print(taxa_chegada)
         np.random.seed(self.semente)
-        coletas_simulacao = 100
+        coletas_simulacao = 119
         tempo_simulacao = 0.0
         numero_total_rodadas = 3200
         rodadas_realizadas = 0
@@ -136,9 +156,6 @@ class Simulador:
                     fila_eventos.append(evento)
                     saida_id += 1
             #print(coletas_totais)
-            if coletas_totais == 190000:
-                fase_transiente = False
-                rodadas_realizadas = 0
             '''
                 verificador = sum(lista_w)/coletas_simulacao
                 if rodadas_realizadas == 0:
@@ -166,16 +183,18 @@ class Simulador:
             #variancia_total_w += round(variancia_w/(coletas_realizadas-1), 4)
             #lista_w = []
             rodadas_realizadas += 1
+            if coletas_totais == 190400:
+                fase_transiente = False
+                rodadas_realizadas = 0
         #print(lista_chegada,lista_entrada_servico)
         #lista_w = self.calcula_w(lista_chegada[:], lista_entrada_servico[:])
         #print(lista_w)
         #media_w = 0.0
-
         #variancia_estimada_w = sum(lista_variancia)/(numero_total_rodadas)
-        media_w = round(sum(lista_w[190001:])/(numero_total_rodadas*coletas_simulacao),4)
+        media_w = round(sum(lista_w[190400:])/(numero_total_rodadas*coletas_simulacao),4)
         #variancia_total_w = round(variancia_total_w/(coletas_realizadas*numero_total_rodadas - 1), 4)
         #media_w = round(media_w/numero_total_rodadas,4)
-        media_variancia = sum(lista_variancia[190001:])/(coletas_simulacao*numero_total_rodadas)
+        media_variancia = sum(lista_variancia[190400:])/(coletas_simulacao*numero_total_rodadas)
         limite_superior_t_student = media_w + 1.961*sqrt(media_variancia/numero_total_rodadas)
         limite_inferior_t_student = media_w - 1.961*sqrt(media_variancia/numero_total_rodadas)
         print("\nPrecisão t-Student: " + str((limite_superior_t_student - limite_inferior_t_student)/(limite_superior_t_student + limite_inferior_t_student)))
@@ -183,14 +202,16 @@ class Simulador:
         limite_superior_chi_square = coletas_simulacao*(numero_total_rodadas-1)/3045.1056
         limite_inferior_chi_square = coletas_simulacao*(numero_total_rodadas-1)/3358.6827
         print("\nPrecisão Chi-square: " + str((limite_superior_chi_square - limite_inferior_chi_square)/(limite_superior_chi_square + limite_inferior_chi_square)))
+        print("\nMedia : " + str(limite_inferior_chi_square + (limite_superior_chi_square - limite_inferior_chi_square)/2))
         print("\nIC da variancia Chi-square:\nLimite Inferior: " + str(limite_inferior_chi_square) + "\nLimite Superior: " + str(limite_superior_chi_square))
-
+        self.t_student(lista_variancia[190400:], numero_total_rodadas, coletas_simulacao)
+        self.t_student(lista_w[190400:], numero_total_rodadas, coletas_simulacao)
         #print(variancia_total_w/numero_total_rodadas)
         print(variancia_estimada_w)
         print(media_w)
         print(len(lista_w))
         print(coletas_totais)
-        plt.plot(lista_variancia[187001:])
+        plt.plot(lista_variancia[190401:])
         #plt.plot(media_estimada)
         plt.ylabel('Tempo de Espera')
         plt.show()
