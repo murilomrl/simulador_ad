@@ -21,7 +21,6 @@ class Simulador:
         self.rho = rho
         self.semente = semente
 
-        
 	## Comentário: Calcula o tempo de espera na fila
 	# @param self Referência ao prório objeto.
 	# @param lista_chegada Lista de Eventos do tipo chegada.
@@ -58,7 +57,7 @@ class Simulador:
         variancia_estimada_w = 0.0
         variancia_estimada_w_1 = 0.0
         variancia_estimada_w_2 = 0.0
-        coletas_totais = 0.0
+        coletas_totais = 0
         media_estimada = []
         lista_variancia = []
         fila_eventos = []
@@ -70,9 +69,13 @@ class Simulador:
         lista_entrada_servico = []
         lista_chegada = []
         lista_partidas = []
-        while rodadas_realizadas < numero_total_rodadas:
+        fase_transiente = True
+        media_espera_maxima = 0.0
+        media_espera_minima = 0.0
+        termino_fase_transiente = 0
+        while rodadas_realizadas < numero_total_rodadas or fase_transiente == True:
             coletas_realizadas = 0
-            while coletas_realizadas <= coletas_simulacao and len(fila_eventos) > 0:
+            while coletas_realizadas < coletas_simulacao and len(fila_eventos) > 0:
                 #print(fila_eventos)
                 evento = fila_eventos.pop(0)
                 #print(evento)
@@ -132,6 +135,27 @@ class Simulador:
                     evento = Evento("partida", tempo_partida, rodadas_realizadas)
                     fila_eventos.append(evento)
                     saida_id += 1
+            #print(coletas_totais)
+            if coletas_totais == 190000:
+                fase_transiente = False
+                rodadas_realizadas = 0
+            '''
+                verificador = sum(lista_w)/coletas_simulacao
+                if rodadas_realizadas == 0:
+                    media_espera_maxima = verificador
+                    media_espera_minima = verificador
+                elif verificador >= media_espera_maxima:
+                    media_espera_maxima = verificador
+                elif verificador <= media_espera_minima:
+                    media_espera_minima = verificador
+                else:
+                    termino_fase_transiente = rodadas_realizadas
+                    rodadas_realizadas = 0
+                    fase_transiente = False
+                    print(verificador)
+                    print(media_espera_minima,media_espera_maxima)
+                    print(termino_fase_transiente)
+            '''
             #lista_variancia.append(variancia_estimada_w)
             #variancia_estimada_w = 0.0
             #variancia_estimada_w_1 = 0.0
@@ -140,7 +164,7 @@ class Simulador:
             #for w in lista_w:
             #    variancia_w += (w - media_w)**2
             #variancia_total_w += round(variancia_w/(coletas_realizadas-1), 4)
-            lista_w = []
+            #lista_w = []
             rodadas_realizadas += 1
         #print(lista_chegada,lista_entrada_servico)
         #lista_w = self.calcula_w(lista_chegada[:], lista_entrada_servico[:])
@@ -148,17 +172,25 @@ class Simulador:
         #media_w = 0.0
 
         #variancia_estimada_w = sum(lista_variancia)/(numero_total_rodadas)
-        media_w = round(media_w/numero_total_rodadas,4)
+        media_w = round(sum(lista_w[190001:])/(numero_total_rodadas*coletas_simulacao),4)
         #variancia_total_w = round(variancia_total_w/(coletas_realizadas*numero_total_rodadas - 1), 4)
         #media_w = round(media_w/numero_total_rodadas,4)
-        limite_superior_t_student = media_w + 1.961*sqrt(variancia_estimada_w/(coletas_simulacao*numero_total_rodadas - 2))
-        limite_inferior_t_student = media_w - 1.961*sqrt(variancia_estimada_w/(coletas_simulacao*numero_total_rodadas - 2))
-        print("\nPrecisão: " + str(1.961*sqrt(variancia_estimada_w)/(media_w*sqrt(coletas_simulacao*numero_total_rodadas - 2))))
+        media_variancia = sum(lista_variancia[190001:])/(coletas_simulacao*numero_total_rodadas)
+        limite_superior_t_student = media_w + 1.961*sqrt(media_variancia/numero_total_rodadas)
+        limite_inferior_t_student = media_w - 1.961*sqrt(media_variancia/numero_total_rodadas)
+        print("\nPrecisão t-Student: " + str((limite_superior_t_student - limite_inferior_t_student)/(limite_superior_t_student + limite_inferior_t_student)))
         print("\nIC da média t-Student:\nLimite Inferior: " + str(limite_inferior_t_student) + "\nLimite Superior: " + str(limite_superior_t_student))
+        limite_superior_chi_square = coletas_simulacao*(numero_total_rodadas-1)/3045.1056
+        limite_inferior_chi_square = coletas_simulacao*(numero_total_rodadas-1)/3358.6827
+        print("\nPrecisão Chi-square: " + str((limite_superior_chi_square - limite_inferior_chi_square)/(limite_superior_chi_square + limite_inferior_chi_square)))
+        print("\nIC da variancia Chi-square:\nLimite Inferior: " + str(limite_inferior_chi_square) + "\nLimite Superior: " + str(limite_superior_chi_square))
+
         #print(variancia_total_w/numero_total_rodadas)
         print(variancia_estimada_w)
         print(media_w)
-        plt.plot(lista_variancia)
+        print(len(lista_w))
+        print(coletas_totais)
+        plt.plot(lista_variancia[187001:])
         #plt.plot(media_estimada)
         plt.ylabel('Tempo de Espera')
         plt.show()
